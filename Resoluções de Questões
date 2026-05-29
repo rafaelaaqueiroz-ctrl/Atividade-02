@@ -1,0 +1,222 @@
+import java.util.Scanner;
+
+public class Pessoa {
+
+    String nome;
+    int idade;
+    double peso, altura;
+
+    // =========================================================
+    // QUESTÃO 1
+    // Cadastra uma nova pessoa no vetor, garantindo nome único.
+    // Retorna o novo tamanho (qtd + 1) ou qtd se vetor cheio.
+    // =========================================================
+
+    /**
+     * Busca um nome no vetor de pessoas cadastradas.
+     * Retorna o índice encontrado ou -1 se não existir.
+     */
+    public static int buscarPorNome(Pessoa[] v, int qtd, String nome) {
+        for (int i = 0; i < qtd; i++) {
+            if (v[i].nome.equalsIgnoreCase(nome)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Cadastra uma nova pessoa no final do vetor.
+     * Garante que não existam dois cadastros com o mesmo nome.
+     * Retorna o novo tamanho do vetor preenchido.
+     */
+    public static int cadastrarPessoa(Pessoa[] v, int qtd) {
+        // Testa se ainda há espaço no vetor
+        if (qtd >= v.length) {
+            System.out.println("Vetor cheio! Não é possível cadastrar mais pessoas.");
+            return qtd;
+        }
+
+        Scanner sc = new Scanner(System.in);
+        Pessoa p = new Pessoa();
+
+        // Garante nome único
+        String nome;
+        do {
+            System.out.print("Digite o nome: ");
+            nome = sc.nextLine().trim();
+            if (buscarPorNome(v, qtd, nome) != -1) {
+                System.out.println("Já existe uma pessoa com esse nome. Digite outro nome.");
+            }
+        } while (buscarPorNome(v, qtd, nome) != -1);
+
+        p.nome = nome;
+
+        System.out.print("Digite a idade: ");
+        p.idade = sc.nextInt();
+
+        System.out.print("Digite o peso (kg): ");
+        p.peso = sc.nextDouble();
+
+        System.out.print("Digite a altura (m): ");
+        p.altura = sc.nextDouble();
+        sc.nextLine(); // consome a quebra de linha restante
+
+        v[qtd] = p;
+        System.out.println("Pessoa cadastrada com sucesso!");
+
+        return qtd + 1;
+    }
+
+    // =========================================================
+    // QUESTÃO 2
+    // Imprime dados e IMC de todas as pessoas cadastradas.
+    // =========================================================
+
+    /**
+     * Calcula e retorna o IMC de uma pessoa.
+     * IMC = peso / (altura * altura)
+     */
+    public static double calcularIMC(Pessoa p) {
+        return p.peso / (p.altura * p.altura);
+    }
+
+    /**
+     * Imprime nome, idade, peso, altura e IMC de cada pessoa.
+     */
+    public static void imprimirPessoas(Pessoa[] v, int qtd) {
+        if (qtd == 0) {
+            System.out.println("Nenhuma pessoa cadastrada.");
+            return;
+        }
+        System.out.println("=== Lista de Pessoas ===");
+        for (int i = 0; i < qtd; i++) {
+            double imc = calcularIMC(v[i]);
+            System.out.println("-----------------------------");
+            System.out.println("Nome   : " + v[i].nome);
+            System.out.println("Idade  : " + v[i].idade + " anos");
+            System.out.printf ("Peso   : %.2f kg%n", v[i].peso);
+            System.out.printf ("Altura : %.2f m%n", v[i].altura);
+            System.out.printf ("IMC    : %.2f%n", imc);
+        }
+        System.out.println("-----------------------------");
+    }
+
+    // =========================================================
+    // QUESTÃO 3
+    // Retorna o índice da pessoa mais velha com IMC de Magreza.
+    // Magreza: IMC < 18,5. Retorna -1 se nenhuma encontrada.
+    // =========================================================
+
+    public static int maisVelhaIMCMagreza(Pessoa[] v, int qtd) {
+        int indiceMaisVelha = -1;
+
+        for (int i = 0; i < qtd; i++) {
+            double imc = calcularIMC(v[i]);
+            if (imc < 18.5) {
+                // Primeira pessoa com magreza encontrada, ou mais velha que a atual
+                if (indiceMaisVelha == -1 || v[i].idade > v[indiceMaisVelha].idade) {
+                    indiceMaisVelha = i;
+                }
+            }
+        }
+
+        return indiceMaisVelha;
+    }
+
+    // =========================================================
+    // QUESTÃO 4
+    // Ordena o vetor pelo campo nome usando Insertion Sort.
+    // =========================================================
+
+    public static void insertionSortPorNome(Pessoa[] v, int qtd) {
+        for (int i = 1; i < qtd; i++) {
+            Pessoa chave = v[i];
+            int j = i - 1;
+
+            // Desloca elementos maiores alfabeticamente para a direita
+            while (j >= 0 && v[j].nome.compareToIgnoreCase(chave.nome) > 0) {
+                v[j + 1] = v[j];
+                j--;
+            }
+
+            v[j + 1] = chave;
+        }
+    }
+
+    // =========================================================
+    // QUESTÃO 5
+    // Enunciado: Implemente a função contarPorFaixaEtaria que
+    // recebe o vetor de pessoas, a quantidade de pessoas
+    // cadastradas, uma idade mínima (idadeMin) e uma idade máxima
+    // (idadeMax), e retorna quantas pessoas possuem idade dentro
+    // desse intervalo (inclusive nos extremos).
+    // =========================================================
+
+    public static int contarPorFaixaEtaria(Pessoa[] v, int qtd, int idadeMin, int idadeMax) {
+        int contador = 0;
+
+        for (int i = 0; i < qtd; i++) {
+            if (v[i].idade >= idadeMin && v[i].idade <= idadeMax) {
+                contador++;
+            }
+        }
+
+        return contador;
+    }
+
+    // =========================================================
+    // MAIN — Demonstração de todas as funções
+    // =========================================================
+
+    public static void main(String[] args) {
+        final int CAPACIDADE = 5;
+        Pessoa[] pessoas = new Pessoa[CAPACIDADE];
+        int qtd = 0;
+
+        // --- Populando dados de teste diretamente (sem Scanner) ---
+        Pessoa p1 = new Pessoa(); p1.nome = "Ana";    p1.idade = 30; p1.peso = 45.0; p1.altura = 1.65;
+        Pessoa p2 = new Pessoa(); p2.nome = "Bruno";  p2.idade = 45; p2.peso = 80.0; p2.altura = 1.75;
+        Pessoa p3 = new Pessoa(); p3.nome = "Carla";  p3.idade = 22; p3.peso = 55.0; p3.altura = 1.60;
+        Pessoa p4 = new Pessoa(); p4.nome = "Diego";  p4.idade = 60; p4.peso = 50.0; p4.altura = 1.80; // IMC magreza
+        Pessoa p5 = new Pessoa(); p5.nome = "Elisa";  p5.idade = 55; p5.peso = 48.0; p5.altura = 1.78; // IMC magreza
+
+        pessoas[qtd++] = p1;
+        pessoas[qtd++] = p2;
+        pessoas[qtd++] = p3;
+        pessoas[qtd++] = p4;
+        pessoas[qtd++] = p5;
+
+        // --- Questão 2: Imprimir pessoas ---
+        System.out.println("\n=== QUESTÃO 2: Imprimir Pessoas ===");
+        imprimirPessoas(pessoas, qtd);
+
+        // --- Questão 3: Mais velha com IMC Magreza ---
+        System.out.println("\n=== QUESTÃO 3: Mais Velha com IMC Magreza ===");
+        int idx = maisVelhaIMCMagreza(pessoas, qtd);
+        if (idx == -1) {
+            System.out.println("Nenhuma pessoa com IMC de Magreza encontrada.");
+        } else {
+            System.out.printf("Pessoa mais velha com Magreza: %s (idade: %d, IMC: %.2f)%n",
+                    pessoas[idx].nome, pessoas[idx].idade, calcularIMC(pessoas[idx]));
+        }
+
+        // --- Questão 4: Ordenar por nome ---
+        System.out.println("\n=== QUESTÃO 4: Ordenação por Nome (Insertion Sort) ===");
+        insertionSortPorNome(pessoas, qtd);
+        System.out.println("Ordem após ordenação:");
+        for (int i = 0; i < qtd; i++) {
+            System.out.println("  " + pessoas[i].nome);
+        }
+
+        // --- Questão 5: Contar por faixa etária ---
+        System.out.println("\n=== QUESTÃO 5: Contar por Faixa Etária ===");
+        int faixaMin = 20, faixaMax = 50;
+        int total = contarPorFaixaEtaria(pessoas, qtd, faixaMin, faixaMax);
+        System.out.printf("Pessoas com idade entre %d e %d anos: %d%n", faixaMin, faixaMax, total);
+
+        // --- Questão 1: Tentativa de cadastro com vetor cheio ---
+        System.out.println("\n=== QUESTÃO 1: Tentativa de cadastro (vetor cheio) ===");
+        qtd = cadastrarPessoa(pessoas, qtd); // Deve informar vetor cheio
+    }
+}
